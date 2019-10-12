@@ -8,4 +8,4 @@ Backend:
   - PEP8 convention
 
 Frontend:
-- tbd
+- React.js
