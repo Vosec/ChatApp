@@ -1,5 +1,6 @@
 import React from "react";
 import { List, Header } from "semantic-ui-react";
+import 'semantic-ui-css/semantic.min.css';
 
 export const Users = ({ users }) => {
   return (

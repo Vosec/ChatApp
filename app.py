@@ -18,8 +18,8 @@ def test():
 def login():
     username = request.get_json()['username']
     password = request.get_json()['password']
-    # db check if username and pass are ok
 
+    # db check if username and pass are ok
     res = {
         "username": username,
         "password": password
