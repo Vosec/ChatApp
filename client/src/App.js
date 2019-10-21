@@ -1,35 +1,29 @@
-import React, {useEffect, useState} from 'react';
-import './App.css';
-import {Users} from "./Components/Users";
-import {LoginForm} from "./Components/LoginForm";
-import { BrowserRouter as Router, Route } from 'react-router-dom'
-import { Container } from "semantic-ui-react";
-import 'semantic-ui-css/semantic.min.css';
+import React, {Component} from 'react'
+import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom'
+import Navbar from './Components/Navbar'
+import Landing from './Components/Landing'
+import Login from './Components/Login'
+import Register from './Components/Register'
+import Profile from './Components/Profile'
 
+class App extends Component {
+    render() {
+        return (
+            <Router>
+                <div className="App">
+                    <Navbar/>
+                    <Redirect from="*" to="/"/>
+                    <Route exact path="/" component={Landing}/>
+                    <div className="container">
+                        <Route exact path="/register" component={Register}/>
+                        <Route exact path="/login" component={Login}/>
+                        <Route exact path="/profile" component={Profile}/>
+                    </div>
 
-
-function App() {
-    const [users, setUsers] = useState([]);
-    useEffect(() => {
-        fetch('/test').then(response =>
-            response.json().then(data => {
-            console.log(data);
-            setUsers(data.users);
-            })
-        );
-    },[]);
-  return (
-      <Container style={{ marginTop: 40 }}>
-      <LoginForm
-        onNewUser={user =>
-          setUsers(currentUsers => [user, ...currentUsers])
-        }
-      />
-    <div className="App">
-         <Users users={users} />
-    </div>
-    </Container>
-  );
+                </div>
+            </Router>
+        )
+    };
 }
 
-export default App;
+export default App
