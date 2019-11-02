@@ -11,12 +11,6 @@ app.config['JWT_SECRET_KEY'] = 'secret'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 
-# Home page router in frontend
-# @app.route('/')
-# def home():
-#     return render_template("index.html")
-
-
 @app.route('/login', methods=['POST'])
 def login():
     """
@@ -28,13 +22,12 @@ def login():
 
     rv = User.check(username)
     if rv is None:
-        return jsonify({"error": "Invalid username and password"}), 401
+        return jsonify({"error": "Invalid username or password"}), 401
     if bcrypt.check_password_hash(rv[1], password):
         access_token = create_access_token(
             identity={'username': rv[0], 'password': rv[1]})
-        return access_token
-    else:
-        return jsonify({"error": "Invalid username and password"}), 401
+        return jsonify({"token": access_token})
+    return jsonify({"error": "Invalid username or password"}), 401
 
 
 @app.route('/register', methods=['POST'])

@@ -34,6 +34,7 @@ class Login extends Component {
                 this.setState({errors: {}, loginState: true});
                 this.props.history.push(`/chat`);
             } else {
+                console.log("nastal error")
                 this.setState({errors: res.data.error, loginState: false});
             }
         })

@@ -4,7 +4,9 @@ import {Redirect} from 'react-router-dom'
 import Landing from "./Landing";
 import io from "socket.io-client";
 import {Button, Form, Input} from "semantic-ui-react";
+
 const socket = io('http://127.0.0.1:5000');
+
 class Chat extends Component {
     constructor() {
         super();
@@ -17,11 +19,11 @@ class Chat extends Component {
         };
         this.doStuff = this.doStuff.bind(this);
         this.onChange = this.onChange.bind(this);
-
+        this.onSubmit = this.onSubmit.bind(this)
     };
 
-    doStuff(){
-        const socket = io.connect('http://127.0.0.1:5000');
+    doStuff() {
+        console.log("jsem v doStuff");
         socket.on('connect', function () {
             socket.send('User has connected!');
         });
@@ -29,76 +31,68 @@ class Chat extends Component {
             this.setState(prevState => ({
                 messages: [...prevState.messages, data]
             }));
-            console.log(this.state.messages)
+            console.log(this.state.messages);
             console.log('Received message');
         });
 
 
     };
+
     onChange(e) {
         this.setState({[e.target.name]: e.target.value});
     }
-    onSubmit(e){
 
-        const socket = io.connect('http://127.0.0.1:5000');
+    onSubmit() {
         socket.send(this.state.message);
-
-
     }
 
     componentDidMount() {
+        console.log("jsem v mountu");
         const token = localStorage.usertoken;
+        this.state.username = localStorage.username;
         console.log(token);
         if (token === undefined) {
             return <Redirect to="/" component={Landing}/>;
         }
 
         const decoded = jwt_decode(token);
-        localStorage.setItem('username', decoded.identity.username)
+        //localStorage.setItem('username', decoded.identity.username);
         this.setState({
             username: decoded.identity.username,
         });
-
         this.doStuff()
     };
-
-
 
     render() {
         return (
             <div>
-            <div>
-            <React.Fragment>
-        <ul className="list-group">
-          {this.state.messages.map(listitem => (
-            <li className="list-group-item list-group-item-primary">
-              {listitem} {localStorage.username}
-            </li>
-          ))}
-        </ul>
-      </React.Fragment>
+                <div>
+                    <React.Fragment>
+                        <ul className="list-group">
+                            {this.state.messages.map(listitem => (
+                                <li className="list-group-item list-group-item-primary">
+                                    {this.state.username} : {listitem}
+                                </li>
+                            ))}
+                        </ul>
+                    </React.Fragment>
                 </div>
-            <div>
-
+                <div>
 
                     <Input
                         type="text"
                         name="message"
                         placeholder="Enter message"
                         value={this.state.message}
-                        onChange={this.onChange}
-                    />
+                        onChange={this.onChange} />
 
-                <Button type="submit" color={"red"} onclick={this.onSubmit}>
-                    Send
-                </Button>
-
-        </div>
+                    <Button type="submit" color={"red"} onClick={this.onSubmit}>
+                        Send
+                    </Button>
                 </div>
+            </div>
         )
     }
-
-
 }
 
 export default Chat
