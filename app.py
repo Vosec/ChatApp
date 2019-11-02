@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager
-from flask_jwt_extended import (create_access_token)
+from flask_jwt_extended import JWTManager, create_access_token
+from flask_socketio import SocketIO, send
 from model import User
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 app.config['JWT_SECRET_KEY'] = 'secret'
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 # Home page router in frontend
@@ -53,5 +54,12 @@ def register():
     return jsonify({"result": "user created"})
 
 
+@socketio.on('message')
+def message(msg):
+    print('Message: ' + msg)
+    send(msg, broadcast=True)
+
+
 if __name__ == '__main__':
     app.run()
+    socketio.run(app)

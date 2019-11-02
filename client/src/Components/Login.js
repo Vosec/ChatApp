@@ -32,7 +32,7 @@ class Login extends Component {
         login(user).then(res => {
             if (res.status === 200) {
                 this.setState({errors: {}, loginState: true});
-                this.props.history.push(`/profile`);
+                this.props.history.push(`/chat`);
             } else {
                 this.setState({errors: res.data.error, loginState: false});
             }
