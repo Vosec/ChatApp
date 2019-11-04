@@ -3,11 +3,12 @@ import jwt_decode from 'jwt-decode'
 import {Redirect} from 'react-router-dom'
 import Landing from "./Landing";
 import io from "socket.io-client";
-import {Button, Form, Input} from "semantic-ui-react";
+import {Button, Input} from "semantic-ui-react";
 
 const socket = io('http://127.0.0.1:5000');
 
 class Chat extends Component {
+    //TODO: Make message Component - it may solve bubble color problem - sending it through props
     constructor() {
         super();
         this.state = {
@@ -17,12 +18,13 @@ class Chat extends Component {
             messages: [],
             message: ""
         };
-        this.doStuff = this.doStuff.bind(this);
+        this.receiveMessage = this.receiveMessage.bind(this);
         this.onChange = this.onChange.bind(this);
-        this.onSubmit = this.onSubmit.bind(this)
+        this.onSubmit = this.onSubmit.bind(this);
+        this.getMessages = this.getMessages.bind(this);
     };
 
-    doStuff() {
+    receiveMessage() {
         console.log("jsem v doStuff");
         socket.on('connect', function () {
             socket.send('User has connected!');
@@ -35,18 +37,34 @@ class Chat extends Component {
             console.log('Received message');
         });
 
-
     };
 
     onChange(e) {
         this.setState({[e.target.name]: e.target.value});
+
     }
 
-    onSubmit() {
-        socket.send(this.state.message);
+    onSubmit(e) {
+        e.preventDefault();
+        socket.send(this.state.username + ": " + this.state.message);
+        this.setState({message: ""});
+
+        //random color gen.
+        /*
+        let letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        if (document.getElementById('x') != undefined) {
+            document.getElementById('x').style.color = color;
+        }
+        */
     }
+
 
     componentDidMount() {
+        //TODO: save new logged user?
         console.log("jsem v mountu");
         const token = localStorage.usertoken;
         this.state.username = localStorage.username;
@@ -60,35 +78,46 @@ class Chat extends Component {
         this.setState({
             username: decoded.identity.username,
         });
-        this.doStuff()
+        this.receiveMessage();
     };
+
+    getMessages() {
+        return (
+            this.state.messages.map(item => (
+                <div className=" ui center aligned page grid">
+                    <div className="column twelve wide">
+                        <div>
+                            <div className="ui small compact message color blue">
+                                <p className="ui color black"> {item}  </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ))
+        )
+    }
 
     render() {
         return (
             <div>
-                <div>
-                    <React.Fragment>
-                        <ul className="list-group">
-                            {this.state.messages.map(listitem => (
-                                <li className="list-group-item list-group-item-primary">
-                                    {this.state.username} : {listitem}
-                                </li>
-                            ))}
-                        </ul>
-                    </React.Fragment>
-                </div>
-                <div>
 
-                    <Input
-                        type="text"
-                        name="message"
-                        placeholder="Enter message"
-                        value={this.state.message}
-                        onChange={this.onChange} />
+                {this.getMessages()}
 
-                    <Button type="submit" color={"red"} onClick={this.onSubmit}>
-                        Send
-                    </Button>
+                <div className="ui center aligned page grid">
+                    <div className="column twelve wide">
+                        <form className="msgForm" onSubmit={this.onSubmit}>
+                            <Input id="inputMessage"
+                                   type="text"
+                                   name="message"
+                                   placeholder="Enter message"
+                                   value={this.state.message}
+                                   onChange={this.onChange}
+                            />
+                            <Button type="submit" color={"red"}>
+                                Send
+                            </Button>
+                        </form>
+                    </div>
                 </div>
             </div>
         )
