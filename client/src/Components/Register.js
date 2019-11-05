@@ -38,18 +38,23 @@ class Register extends Component {
         })
     }
 
+    showError() {
+        return (
+            this.state.regState === false &&
+            <div className="ui negative message">
+                <i className="close icon"></i>
+                <div className="header">
+                    {this.state.errors}
+                </div>
+            </div>
+        )
+    }
+
     render() {
         return (
             <div className="ui center aligned page grid">
                 <div className="column twelve wide">
-                    {this.state.regState === false &&
-                    <div className="ui negative message">
-                        <i className="close icon"></i>
-                        <div className="header">
-                            {this.state.errors}
-                        </div>
-                    </div>
-                    }
+                    {this.showError()}
                     <form noValidate onSubmit={this.onSubmit}>
                         <div>
                             <h2 className="ui icon center aligned header">

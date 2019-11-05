@@ -31,6 +31,22 @@ export const login = user => {
             return response
         })
         .catch(err => {
+            console.log("error" + err.response);
+            return err.response;
+
+        })
+};
+
+export const history = user => {
+    return axios
+        .get('/history', {
+        //TODO: add config?
+        })
+        .then(response => {
+            console.log(response.data);
+            return response.data
+        })
+        .catch(err => {
             console.log(err.response);
             return err.response;
 

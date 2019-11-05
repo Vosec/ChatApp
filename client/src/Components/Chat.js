@@ -4,6 +4,7 @@ import {Redirect} from 'react-router-dom'
 import Landing from "./Landing";
 import io from "socket.io-client";
 import {Button, Input} from "semantic-ui-react";
+import {history} from "./UserFunctions";
 
 const socket = io('http://127.0.0.1:5000');
 
@@ -22,13 +23,34 @@ class Chat extends Component {
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.getMessages = this.getMessages.bind(this);
+        this.getHistory = this.getHistory.bind(this);
+        console.log("construktor");
+
+        //get history
+        history().then(res => {
+                res.history.map(item => (
+                    this.setState(prevState => ({
+                        messages: [...prevState.messages, item]
+                    }))
+                ))
+        })
     };
 
-    receiveMessage() {
-        console.log("jsem v doStuff");
-        socket.on('connect', function () {
-            socket.send('User has connected!');
+    //idk
+    getHistory() {
+        socket.on('start', (data) => {
+            console.log("inside");
+            this.setState(prevState => ({
+                messages: [...prevState.messages, data]
+            }));
         });
+        console.log("getting history")
+    }
+
+    receiveMessage() {
+        //socket.on('connect', function () {
+        //    socket.send('User has connected!');
+        //});
         socket.on('message', (data) => {
             this.setState(prevState => ({
                 messages: [...prevState.messages, data]
@@ -41,7 +63,6 @@ class Chat extends Component {
 
     onChange(e) {
         this.setState({[e.target.name]: e.target.value});
-
     }
 
     onSubmit(e) {
@@ -62,10 +83,9 @@ class Chat extends Component {
         */
     }
 
-
     componentDidMount() {
         //TODO: save new logged user?
-        console.log("jsem v mountu");
+        console.log("componentDidMount");
         const token = localStorage.usertoken;
         this.state.username = localStorage.username;
         console.log(token);
@@ -84,12 +104,10 @@ class Chat extends Component {
     getMessages() {
         return (
             this.state.messages.map(item => (
-                <div className=" ui center aligned page grid">
+                <div className="ui center aligned page grid">
                     <div className="column twelve wide">
-                        <div>
-                            <div className="ui small compact message color blue">
-                                <p className="ui color black"> {item}  </p>
-                            </div>
+                        <div className="ui small compact message color blue">
+                            {item}
                         </div>
                     </div>
                 </div>
@@ -100,9 +118,7 @@ class Chat extends Component {
     render() {
         return (
             <div>
-
                 {this.getMessages()}
-
                 <div className="ui center aligned page grid">
                     <div className="column twelve wide">
                         <form className="msgForm" onSubmit={this.onSubmit}>

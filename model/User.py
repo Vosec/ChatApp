@@ -33,3 +33,22 @@ def register(username, password):
                 str(created)))
     conn.commit()
 
+
+def save_message(data):
+    created = datetime.utcnow()
+    if ":" in data:
+        username, msg = data.split(":")
+        cur.execute("""INSERT INTO messages (userName, message, created) VALUES (%s, %s, %s)""",
+                     (str(username), str(msg),
+                      str(created)))
+        conn.commit()
+
+
+def get_messages():
+    res = []
+    cur.execute("""SELECT * FROM messages""")
+    rv = cur.fetchall()
+    for msg in rv:
+        # msg[0] = msg, msg[1] = date, msg[2] = userName
+        res.append(msg[2] + ": " + msg[0])
+    return res
