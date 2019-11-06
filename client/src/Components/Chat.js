@@ -5,6 +5,7 @@ import Landing from "./Landing";
 import io from "socket.io-client";
 import {Button, Input} from "semantic-ui-react";
 import {history} from "./UserFunctions";
+import '../App.css'
 
 const socket = io('http://127.0.0.1:5000');
 
@@ -13,17 +14,19 @@ class Chat extends Component {
     constructor() {
         super();
         this.state = {
-            username: '',
+            username: "",
             errors: {},
             endpoint: "http://127.0.0.1:5000",
             messages: [],
-            message: ""
+            message: "",
+            users: []
         };
         this.receiveMessage = this.receiveMessage.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.getMessages = this.getMessages.bind(this);
-        this.getHistory = this.getHistory.bind(this);
+        this.saveUser = this.saveUser.bind(this);
+
         console.log("construktor");
 
         //get history
@@ -36,21 +39,7 @@ class Chat extends Component {
         })
     };
 
-    //idk
-    getHistory() {
-        socket.on('start', (data) => {
-            console.log("inside");
-            this.setState(prevState => ({
-                messages: [...prevState.messages, data]
-            }));
-        });
-        console.log("getting history")
-    }
-
     receiveMessage() {
-        //socket.on('connect', function () {
-        //    socket.send('User has connected!');
-        //});
         socket.on('message', (data) => {
             this.setState(prevState => ({
                 messages: [...prevState.messages, data]
@@ -58,57 +47,60 @@ class Chat extends Component {
             console.log(this.state.messages);
             console.log('Received message');
         });
-
     };
 
+    //FIXME: not working
+    saveUser(us){
+        this.setState({
+            username: us,
+        });
+        this.setState(prevState => ({
+                users: [...prevState.users, this.state.username]
+            }));
+
+        console.log(this.state.user);
+        console.log(this.state.users);
+    }
     onChange(e) {
         this.setState({[e.target.name]: e.target.value});
     }
 
     onSubmit(e) {
         e.preventDefault();
+        //socket.send({username: this.state.username, message: this.state.message});
         socket.send(this.state.username + ": " + this.state.message);
         this.setState({message: ""});
-
-        //random color gen.
-        /*
-        let letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        if (document.getElementById('x') != undefined) {
-            document.getElementById('x').style.color = color;
-        }
-        */
     }
 
     componentDidMount() {
         //TODO: save new logged user?
         console.log("componentDidMount");
         const token = localStorage.usertoken;
-        this.state.username = localStorage.username;
         console.log(token);
         if (token === undefined) {
             return <Redirect to="/" component={Landing}/>;
         }
 
         const decoded = jwt_decode(token);
-        //localStorage.setItem('username', decoded.identity.username);
-        this.setState({
-            username: decoded.identity.username,
-        });
+        //FIXME: not working
+        this.saveUser(decoded.identity.username);
         this.receiveMessage();
     };
 
     getMessages() {
         return (
             this.state.messages.map(item => (
-                <div className="ui center aligned page grid">
-                    <div className="column twelve wide">
-                        <div className="ui small compact message color blue">
-                            {item}
+                <div className="ui left aligned page grid">
+                    <div className="column twelve">
+                        <div className="ui small message color grey">
+                            <div className="header">
+                                {item.split(":")[0] + ": "}
+                            </div>
+                            <div className="ui wide divider"></div>
+                            {item.split(":")[1]}
                         </div>
+                        <div className="ui hidden fitted divider">
+                            </div>
                     </div>
                 </div>
             ))
@@ -118,9 +110,12 @@ class Chat extends Component {
     render() {
         return (
             <div>
+            <div>
+
                 {this.getMessages()}
-                <div className="ui center aligned page grid">
-                    <div className="column twelve wide">
+            </div>
+            <div>
+                    <footer>
                         <form className="msgForm" onSubmit={this.onSubmit}>
                             <Input id="inputMessage"
                                    type="text"
@@ -133,8 +128,8 @@ class Chat extends Component {
                                 Send
                             </Button>
                         </form>
-                    </div>
-                </div>
+                        </footer>
+            </div>
             </div>
         )
     }

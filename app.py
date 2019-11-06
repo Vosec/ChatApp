@@ -52,15 +52,6 @@ def register():
     return jsonify({"result": "user created"})
 
 
-@socketio.on('start')
-def init_chat():
-    print("jsem ve startu")
-    msgs = User.get_messages()
-    # FIXME: ugly?
-    for msg in msgs:
-        send(msg, broadcast=True)
-
-
 @app.route('/history', methods=['GET'])
 def get_history():
     msgs = User.get_messages()
@@ -69,11 +60,13 @@ def get_history():
 
 @socketio.on('message')
 def message(msg):
+    # for k, v in msg.items():
+    #     print(k, v)
+    print('Message: ' + msg)
     User.save_message(msg)
     # TODO: solve len of msg cause of username...
     if len(msg) > 20 or len(msg) <= 0:
         return jsonify({"error": "Maximum length of message is 20 chars, minimum 1"}), 400
-    print('Message: ' + msg)
     send(msg, broadcast=True)
 
 
