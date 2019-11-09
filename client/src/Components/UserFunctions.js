@@ -34,10 +34,26 @@ export const login = user => {
         })
 };
 
-export const history = user => {
+export const history = room => {
     return axios
-        .get('/history', {
-        //TODO: add config?
+        .post('/history', {
+        room: room
+        })
+        .then(response => {
+            console.log(response.data);
+            return response.data
+        })
+        .catch(err => {
+            console.log(err.response);
+            return err.response;
+
+        })
+};
+
+export const rooms = room => {
+    return axios
+        .get('/rooms', {
+
         })
         .then(response => {
             console.log(response.data);

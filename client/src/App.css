@@ -24,9 +24,10 @@
 footer {
     background-color: #4c4f52;
     position: fixed;
-    left: 0;
+
     bottom: 0;
     height: 36px;
     width: 100%;
     z-index:1
 }
+

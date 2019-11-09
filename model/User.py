@@ -35,20 +35,33 @@ def register(username, password):
 
 
 def save_message(data):
-    created = datetime.utcnow()
-    if ":" in data:
-        username, msg = data.split(":")
-        cur.execute("""INSERT INTO messages (userName, message, created) VALUES (%s, %s, %s)""",
-                     (str(username), str(msg),
-                      str(created)))
-        conn.commit()
+    created = datetime.now()
+
+    cur.execute("""INSERT INTO messages (userName, message, created, room) VALUES (%s, %s, %s, %s)""",
+                 (str(data['username']), str(data['message']),
+                  str(created), str(data['room'])))
+    conn.commit()
 
 
-def get_messages():
+def get_messages(room):
     res = []
-    cur.execute("""SELECT * FROM messages""")
+    cur.execute("""SELECT * FROM messages WHERE room = %s""", str(room))
     rv = cur.fetchall()
     for msg in rv:
         # msg[0] = msg, msg[1] = date, msg[2] = userName
         res.append(msg[2] + ": " + msg[0])
+    return res
+
+
+def create_room(room):
+    cur.execute("""INSERT INTO rooms (name) VALUES (%s)""", (str(room['room'])))
+    conn.commit()
+
+
+def get_rooms():
+    res = []
+    cur.execute("""SELECT * FROM rooms""")
+    rv = cur.fetchall()
+    for room in rv:
+        res.append(room[1]+":")
     return res

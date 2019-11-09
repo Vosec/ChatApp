@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, join_room, leave_room
 from model import User
 
 app = Flask(__name__)
@@ -52,22 +52,61 @@ def register():
     return jsonify({"result": "user created"})
 
 
-@app.route('/history', methods=['GET'])
+@app.route('/history', methods=['POST'])
 def get_history():
-    msgs = User.get_messages()
+    print("history" + request.get_json()['room'])
+    room = request.get_json()['room']
+    msgs = User.get_messages(room)
     return jsonify({"history": msgs})
 
 
 @socketio.on('message')
 def message(msg):
-    # for k, v in msg.items():
-    #     print(k, v)
-    print('Message: ' + msg)
+    print('Message: ' + msg['username']+": "+msg['message'])
     User.save_message(msg)
     # TODO: solve len of msg cause of username...
     if len(msg) > 20 or len(msg) <= 0:
         return jsonify({"error": "Maximum length of message is 20 chars, minimum 1"}), 400
-    send(msg, broadcast=True)
+    send(msg['username']+": "+msg['message'], broadcast=True, room=msg['room'])
+
+
+@socketio.on('join')
+def on_join(data):
+    print("changing room")
+    username = data['username']
+    room = data['room']
+    join_room(room)
+    print(room)
+    send(username + ' has entered the room', room=room)
+
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    send(username + ' has left the room', room=room)
+
+
+@socketio.on('createRoom')
+def create_room(data):
+    #TODO: unique name
+    User.create_room(data)
+
+
+@socketio.on('getRooms')
+def get_rooms():
+    # FIXME: not working
+    print("getrooms")
+    #TODO: unique name
+    send(User.get_rooms())
+
+
+# @app.route('/rooms', methods=['GET'])
+# def get_rooms():
+#    print("getrooms")
+#    rooms = User.get_rooms()
+#    return jsonify({"rooms": rooms})
 
 
 if __name__ == '__main__':
