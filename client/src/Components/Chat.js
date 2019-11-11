@@ -32,9 +32,9 @@ class Chat extends Component {
         this.createRoom = this.createRoom.bind(this);
         this.changeRoom = this.changeRoom.bind(this);
         this.receiveRooms = this.receiveRooms.bind(this);
+        this.receiveNewestRoom = this.receiveNewestRoom.bind(this);
 
         console.log("construktor");
-        //this.receiveRooms();
         //get history
         const decoded = jwt_decode(localStorage.usertoken);
         //FIXME: not working
@@ -54,7 +54,7 @@ class Chat extends Component {
                     messages: [...prevState.messages, item]
                 }))
             ))
-        })
+        });
     };
 
     receiveMessage() {
@@ -105,25 +105,25 @@ class Chat extends Component {
         //FIXME: not working
         this.saveUser(decoded.identity.username);
         this.receiveMessage();
-        this.setState({rooms: ["default", "jedna", "dva"]})
-        // this.receiveRooms();
+        this.setState({rooms: ["default", "jedna", "dva"]});
+        this.receiveRooms();
     };
-
-    /*
-    receiveRooms() {
-        rooms().then(res => {
-            res.rooms.map(item => (
-                this.setState(prevState => ({
-                    rooms: [...prevState.rooms, item]
-                }))
-            ))
-        });
-    }
-    */
 
     receiveRooms() {
         //FIXME: not working socket.emit
+        socket.emit("getRooms");
         socket.on('getRooms', (data) => {
+            data.map(item => (
+                this.setState(prevState => ({
+                    rooms: [...prevState.rooms, item]
+                }))));
+        })
+    }
+
+    receiveNewestRoom() {
+        //FIXME: not working socket.emit
+        socket.emit("getNewestRoom");
+        socket.on('getNewestRoom', (data) => {
             this.setState(prevState => ({
                 rooms: [...prevState.rooms, data]
             }));
@@ -133,9 +133,8 @@ class Chat extends Component {
     createRoom(e) {
         e.preventDefault();
         socket.emit('createRoom', {"room": this.state.newRoom});
-        //this.receiveRooms();
         this.setState({newRoom: ""});
-
+        this.receiveNewestRoom();
     }
 
     changeRoom(e) {

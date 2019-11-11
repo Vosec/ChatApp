@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token
-from flask_socketio import SocketIO, send, join_room, leave_room
+from flask_socketio import SocketIO, send, join_room, leave_room, emit
 from model import User
+import time
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -90,8 +91,15 @@ def on_leave(data):
 
 @socketio.on('createRoom')
 def create_room(data):
+    print("create room: " + data['room'])
     #TODO: unique name
     User.create_room(data)
+
+
+@socketio.on('getNewestRoom')
+def get_newest_room():
+    time.sleep(0.75)
+    emit("getNewestRoom", User.get_newest_room())
 
 
 @socketio.on('getRooms')
@@ -99,16 +107,9 @@ def get_rooms():
     # FIXME: not working
     print("getrooms")
     #TODO: unique name
-    send(User.get_rooms())
-
-
-# @app.route('/rooms', methods=['GET'])
-# def get_rooms():
-#    print("getrooms")
-#    rooms = User.get_rooms()
-#    return jsonify({"rooms": rooms})
+    emit("getRooms", User.get_rooms())
 
 
 if __name__ == '__main__':
-    app.run()
+    # app.run()
     socketio.run(app)
