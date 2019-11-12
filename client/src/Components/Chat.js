@@ -4,7 +4,7 @@ import {Redirect} from 'react-router-dom'
 import Landing from "./Landing";
 import io from "socket.io-client";
 import {Button, Input} from "semantic-ui-react";
-import {history, rooms} from "./UserFunctions";
+import {history} from "./UserFunctions";
 import '../App.css'
 
 const socket = io('http://127.0.0.1:5000');
@@ -16,7 +16,7 @@ class Chat extends Component {
         this.state = {
             username: "",
             errors: {},
-            endpoint: "http://127.0.0.1:5000",
+            error: "",
             messages: [],
             message: "",
             users: [],
@@ -105,12 +105,10 @@ class Chat extends Component {
         //FIXME: not working
         this.saveUser(decoded.identity.username);
         this.receiveMessage();
-        this.setState({rooms: ["default", "jedna", "dva"]});
         this.receiveRooms();
     };
 
     receiveRooms() {
-        //FIXME: not working socket.emit
         socket.emit("getRooms");
         socket.on('getRooms', (data) => {
             data.map(item => (
@@ -124,9 +122,10 @@ class Chat extends Component {
         //FIXME: not working socket.emit
         socket.emit("getNewestRoom");
         socket.on('getNewestRoom', (data) => {
-            this.setState(prevState => ({
-                rooms: [...prevState.rooms, data]
-            }));
+            if(!(this.state.rooms.includes(data))){
+                this.setState(prevState => ({
+                    rooms: [...prevState.rooms, data]
+            }))};
         })
     }
 
@@ -135,6 +134,7 @@ class Chat extends Component {
         socket.emit('createRoom', {"room": this.state.newRoom});
         this.setState({newRoom: ""});
         this.receiveNewestRoom();
+
     }
 
     changeRoom(e) {
@@ -166,8 +166,8 @@ class Chat extends Component {
                        value={this.state.newRoom}
                        onChange={this.onChange}
                 />
-                <Button type="submit" color={"red"}>
-                    Send
+                <Button type="submit" color={"orange"}>
+                    Create
                 </Button>
             </form>
         )
@@ -196,17 +196,17 @@ class Chat extends Component {
     render() {
         return (
             <div>
-
+                <div className="ui divider"></div>
                 <div>
                     {this.state.rooms.map(item => (
-                        <button value={item} id="roomName" onClick={this.changeRoom}> {item} </button>
+                        <button class="mini circular orange ui button" value={item} id="roomName" onClick={this.changeRoom}> {item} </button>
                     ))}
                 </div>
-
+                <div className="ui hidden divider"></div>
                 <div className={"column one"}>
                     {this.createRoomHtml()}
                 </div>
-
+                <div className="ui divider"></div>
                 <div>
                     {this.getMessages()}
                 </div>
@@ -222,7 +222,7 @@ class Chat extends Component {
                                    value={this.state.message}
                                    onChange={this.onChange}
                             />
-                            <Button type="submit" color={"red"}>
+                            <Button type="submit" color={"blue"}>
                                 Send
                             </Button>
                         </form>

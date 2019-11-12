@@ -92,7 +92,6 @@ def on_leave(data):
 @socketio.on('createRoom')
 def create_room(data):
     print("create room: " + data['room'])
-    #TODO: unique name
     User.create_room(data)
 
 
@@ -104,9 +103,7 @@ def get_newest_room():
 
 @socketio.on('getRooms')
 def get_rooms():
-    # FIXME: not working
     print("getrooms")
-    #TODO: unique name
     emit("getRooms", User.get_rooms())
 
 

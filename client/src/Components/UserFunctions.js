@@ -50,18 +50,3 @@ export const history = room => {
         })
 };
 
-export const rooms = room => {
-    return axios
-        .get('/rooms', {
-
-        })
-        .then(response => {
-            console.log(response.data);
-            return response.data
-        })
-        .catch(err => {
-            console.log(err.response);
-            return err.response;
-
-        })
-};
