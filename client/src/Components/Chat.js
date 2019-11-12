@@ -28,7 +28,7 @@ class Chat extends Component {
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.getMessages = this.getMessages.bind(this);
-        this.saveUser = this.saveUser.bind(this);
+        //this.saveUser = this.saveUser.bind(this);
         this.createRoom = this.createRoom.bind(this);
         this.changeRoom = this.changeRoom.bind(this);
         this.receiveRooms = this.receiveRooms.bind(this);
@@ -68,6 +68,7 @@ class Chat extends Component {
         });
     };
 
+    /*
     //FIXME: not working
     saveUser(us) {
         this.setState({
@@ -80,7 +81,7 @@ class Chat extends Component {
         console.log(this.state.user);
         console.log(this.state.users);
     }
-
+    */
     onChange(e) {
         this.setState({[e.target.name]: e.target.value});
     }
@@ -103,7 +104,7 @@ class Chat extends Component {
 
         const decoded = jwt_decode(token);
         //FIXME: not working
-        this.saveUser(decoded.identity.username);
+        //this.saveUser(decoded.identity.username);
         this.receiveMessage();
         this.receiveRooms();
     };
@@ -122,10 +123,11 @@ class Chat extends Component {
         //FIXME: not working socket.emit
         socket.emit("getNewestRoom");
         socket.on('getNewestRoom', (data) => {
-            if(!(this.state.rooms.includes(data))){
+            if (!(this.state.rooms.includes(data))) {
                 this.setState(prevState => ({
                     rooms: [...prevState.rooms, data]
-            }))};
+                }))
+            }
         })
     }
 
@@ -180,7 +182,7 @@ class Chat extends Component {
                     <div className="column twenty">
                         <div className="ui small message color grey">
                             <div className="header">
-                                {item.split(":")[0] + ": "}
+                                <p class="textFont"> {item.split(":")[0] + ": "} </p>
                             </div>
                             <div className="ui wide divider"></div>
                             {item.split(":")[1]}
@@ -196,17 +198,18 @@ class Chat extends Component {
     render() {
         return (
             <div>
-                <div className="ui divider"></div>
+                <div className="ui horizontal divider">Chat rooms</div>
                 <div>
                     {this.state.rooms.map(item => (
-                        <button class="mini circular orange ui button" value={item} id="roomName" onClick={this.changeRoom}> {item} </button>
+                        <button class="mini circular orange ui button" value={item} id="roomName"
+                                onClick={this.changeRoom}> {item} </button>
                     ))}
                 </div>
                 <div className="ui hidden divider"></div>
                 <div className={"column one"}>
                     {this.createRoomHtml()}
                 </div>
-                <div className="ui divider"></div>
+                <div className="ui horizontal divider"> Chat</div>
                 <div>
                     {this.getMessages()}
                 </div>

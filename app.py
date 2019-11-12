@@ -55,6 +55,10 @@ def register():
 
 @app.route('/history', methods=['POST'])
 def get_history():
+    """
+    history of room endpoint
+    :return: json chat history
+    """
     print("history" + request.get_json()['room'])
     room = request.get_json()['room']
     msgs = User.get_messages(room)
@@ -63,6 +67,9 @@ def get_history():
 
 @socketio.on('message')
 def message(msg):
+    """
+    websocket for broadcasting messages to connected rooms
+    """
     print('Message: ' + msg['username']+": "+msg['message'])
     User.save_message(msg)
     # TODO: solve len of msg cause of username...
@@ -73,6 +80,9 @@ def message(msg):
 
 @socketio.on('join')
 def on_join(data):
+    """
+    websocket for joing to the room
+    """
     print("changing room")
     username = data['username']
     room = data['room']
@@ -83,6 +93,9 @@ def on_join(data):
 
 @socketio.on('leave')
 def on_leave(data):
+    """
+    websocket for leaving the room
+    """
     username = data['username']
     room = data['room']
     leave_room(room)
@@ -91,18 +104,27 @@ def on_leave(data):
 
 @socketio.on('createRoom')
 def create_room(data):
+    """
+    websocket for creating the room
+    """
     print("create room: " + data['room'])
     User.create_room(data)
 
 
 @socketio.on('getNewestRoom')
 def get_newest_room():
-    time.sleep(0.75)
+    """
+    websocket for getting newest room
+    """
+    time.sleep(0.5)
     emit("getNewestRoom", User.get_newest_room())
 
 
 @socketio.on('getRooms')
 def get_rooms():
+    """
+    websocket for getting all the rooms
+    """
     print("getrooms")
     emit("getRooms", User.get_rooms())
 
