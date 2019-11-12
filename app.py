@@ -5,11 +5,13 @@ from flask_socketio import SocketIO, send, join_room, leave_room, emit
 from model import User
 import time
 
+
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 app.config['JWT_SECRET_KEY'] = 'secret'
 socketio = SocketIO(app, cors_allowed_origins="*")
+
 
 
 @app.route('/login', methods=['POST'])

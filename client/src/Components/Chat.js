@@ -49,11 +49,12 @@ class Chat extends Component {
         }
         this.state.messages = [];
         history(this.state.room).then(res => {
+            if(res.history !== undefined){
             res.history.map(item => (
                 this.setState(prevState => ({
                     messages: [...prevState.messages, item]
                 }))
-            ))
+            ))}
         });
     };
 
@@ -149,11 +150,12 @@ class Chat extends Component {
         this.state.room = e.target.value;
 
         history(this.state.room).then(res => {
+            if(res.history !== undefined){
             res.history.map(item => (
                 this.setState(prevState => ({
                     messages: [...prevState.messages, item]
                 }))
-            ))
+            ))}
         });
         socket.emit("join", data);
     }

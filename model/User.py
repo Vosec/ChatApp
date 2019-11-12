@@ -1,5 +1,27 @@
 import pymysql
 from datetime import datetime
+import psycopg2
+
+POSTGRES_USER = 'postgres'
+POSTGRES_PW = 'heslo'
+POSTGRES_DB = 'chatapp'
+POSTGRES_HOST = 'localhost'
+POSTGRES_PORT = '5432'
+
+# from mysql to postgre - all userName -> username
+
+POSTGRES = {
+    'user': 'postgres',
+    'pw': 'heslo',
+    'db': 'chatapp',
+    'host': 'localhost',
+    'port': '5432',
+}
+SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:\
+%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
+
+connection = psycopg2.connect(user=POSTGRES_USER, password=POSTGRES_PW, host=POSTGRES_HOST,
+                              port=POSTGRES_PORT, database=POSTGRES_DB)
 
 MYSQL_HOST = 'localhost'
 MYSQL_USER = 'root'
@@ -15,8 +37,9 @@ def check(username):
     :param username: name of user
     :return: returns username, hashed pw, and date of creation
     """
-    cur = conn.cursor()
-    cur.execute("""SELECT * FROM users where userName = %s""", str(username))
+    #cur = conn.cursor()
+    cur = connection.cursor()
+    cur.execute("SELECT * FROM users where username = %s", str(username))
     rv = cur.fetchone()
     cur.close()
     return rv
@@ -28,8 +51,10 @@ def check_room(room):
     :param room: name of room
     :return: room
     """
-    cur = conn.cursor()
-    cur.execute("""SELECT * FROM rooms where name = %s""", str(room))
+    # cur = conn.cursor()
+    cur = connection.cursor()
+    print("err"+room)
+    cur.execute("""SELECT * FROM rooms where name = %s""", (str(room),))
     rv = cur.fetchone()
     cur.close()
     return rv
@@ -42,12 +67,14 @@ def register(username, password):
     :param password: hashed password of user
     :return: None
     """
-    cur = conn.cursor()
+    # cur = conn.cursor()
+    cur = connection.cursor()
     created = datetime.utcnow()
-    cur.execute("""INSERT INTO users (userName, userPw, created) VALUES (%s, %s, %s)""", (str(username), str(password),
+    cur.execute("""INSERT INTO users (username, userPw, created) VALUES (%s, %s, %s)""", (str(username), str(password),
                 str(created)))
     cur.close()
-    conn.commit()
+    #conn.commit()
+    connection.commit()
 
 
 def save_message(data):
@@ -57,12 +84,14 @@ def save_message(data):
     :return: None
     """
     created = datetime.now()
-    cur = conn.cursor()
-    cur.execute("""INSERT INTO messages (userName, message, created, room) VALUES (%s, %s, %s, %s)""",
+    # cur = conn.cursor()
+    cur = connection.cursor()
+    cur.execute("""INSERT INTO messages (username, message, created, room) VALUES (%s, %s, %s, %s)""",
                  (str(data['username']), str(data['message']),
                   str(created), str(data['room'])))
     cur.close()
-    conn.commit()
+    # conn.commit()
+    connection.commit()
 
 
 def get_messages(room):
@@ -72,14 +101,15 @@ def get_messages(room):
     :return: messages for the room as list
     """
     res = []
-    cur = conn.cursor()
-    cur.execute("""SELECT * FROM messages WHERE room = %s""", str(room))
+    # cur = conn.cursor()
+    cur = connection.cursor()
+    cur.execute("""SELECT * FROM messages WHERE room = %s""", (str(room),))
     rv = cur.fetchall()
     cur.close()
 
     for msg in rv:
         # msg[0] = msg, msg[1] = date, msg[2] = userName
-        res.append(msg[2] + ": " + msg[0])
+        res.append(msg[3] + ": " + msg[2])
     return res
 
 
@@ -92,10 +122,12 @@ def create_room(room):
     tmp = check_room(room['room'])
     print(tmp)
     if tmp is None:
-        cur = conn.cursor()
-        cur.execute("""INSERT INTO rooms (name) VALUES (%s)""", (str(room['room'])))
+        # cur = conn.cursor()
+        cur = connection.cursor()
+        cur.execute("""INSERT INTO rooms (name) VALUES (%s)""", (str(room['room']),))
         cur.close()
-        conn.commit()
+        # conn.commit()
+        connection.commit()
 
 
 def get_rooms():
@@ -104,13 +136,14 @@ def get_rooms():
     :return: all rooms as list
     """
     res = []
-    cur = conn.cursor()
+    # cur = conn.cursor()
+    cur = connection.cursor()
     cur.execute("""SELECT * FROM rooms""")
     rv = cur.fetchall()
     cur.close()
 
     for room in rv:
-        res.append(room[1])
+        res.append(room[0])
     return res
 
 
@@ -119,8 +152,9 @@ def get_newest_room():
     Gets newest room
     :return: newest room
     """
-    cur = conn.cursor()
+    # cur = conn.cursor()
+    cur = connection.cursor()
     cur.execute("""SELECT * FROM rooms ORDER BY id DESC LIMIT 1""")
     rv = cur.fetchone()
     cur.close()
-    return rv[1]
+    return rv[0]
