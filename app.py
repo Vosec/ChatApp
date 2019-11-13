@@ -13,6 +13,11 @@ app.config['JWT_SECRET_KEY'] = 'secret'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 
+@app.route('/')
+def index():
+    return "xx"
+
+
 @app.route('/login', methods=['POST'])
 def login():
     """
