@@ -13,7 +13,6 @@ app.config['JWT_SECRET_KEY'] = 'secret'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 
-
 @app.route('/login', methods=['POST'])
 def login():
     """
@@ -132,5 +131,5 @@ def get_rooms():
 
 
 if __name__ == '__main__':
-    # app.run()
+    app.run()
     socketio.run(app)

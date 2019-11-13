@@ -2,10 +2,16 @@ import pymysql
 from datetime import datetime
 import psycopg2
 
-POSTGRES_USER = 'postgres'
-POSTGRES_PW = 'heslo'
-POSTGRES_DB = 'chatapp'
-POSTGRES_HOST = 'localhost'
+# POSTGRES_USER = 'postgres'
+# POSTGRES_PW = 'heslo'
+# POSTGRES_DB = 'chatapp'
+# POSTGRES_HOST = 'localhost'
+# POSTGRES_PORT = '5432'
+
+POSTGRES_USER = 'gmqcymynziepfn'
+POSTGRES_PW = '7ae921599253aabdf71e2349228a8c6b1602d39cd5c00f29770ea7728627f781'
+POSTGRES_DB = 'dahdv0728b4e3d'
+POSTGRES_HOST = 'ec2-54-217-221-21.eu-west-1.compute.amazonaws.com'
 POSTGRES_PORT = '5432'
 
 # from mysql to postgre - all userName -> username
@@ -28,7 +34,7 @@ MYSQL_USER = 'root'
 MYSQL_PASSWORD = ''
 MYSQL_DB = 'chatapp'
 
-conn = pymysql.connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB)
+#conn = pymysql.connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB)
 
 
 def check(username):
