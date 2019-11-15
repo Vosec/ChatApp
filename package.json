@@ -1,8 +1,11 @@
-{
-    "heroku-postbuild": "cd client && npm install && npm run build",
-    "dev": "cd client && react-scripts start",
-    "start": "cd client && serve -s build",
-    "build": "cd client && react-scripts build",
-    "test": "cd client && react-scripts test",
-    "eject": "cd client && react-scripts eject"
+    { 
+"name": "rmmd", 
+"version": "0.0.1", 
+"engines": { 
+"node": "10.16.3", 
+"npm": "6.9.0" 
+}, 
+"scripts": { 
+"heroku-postbuild": "cd client&& npm install && npm run build:production"
+ } 
 }

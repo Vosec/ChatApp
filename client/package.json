@@ -16,7 +16,7 @@
   },
   "engines": {
     "node": "10.16.3",
-    "npm": ""
+    "npm": "6.9.0"
   },
   "scripts": {
     "dev": "react-scripts start",
