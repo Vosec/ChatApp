@@ -41,8 +41,8 @@ class Navbar extends Component {
                         </Link>
                     </td>
                     <td>
-                        <Link to="/profile" className="nav-link">
-                            User
+                        <Link to="/chat" className="nav-link">
+                            Chat
                         </Link>
                     </td>
                     <td>

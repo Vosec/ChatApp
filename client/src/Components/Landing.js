@@ -6,11 +6,9 @@ class Landing extends Component {
         return (
             <div className="ui center aligned page grid">
                 <div className="column twelve wide">
-                    <h1>Welcome to chat app! </h1>
-                    <i className="rocketchat red big circular icon"></i>
+                    <h1>Chat App</h1>
                 </div>
             </div>
-
         )
     };
 }

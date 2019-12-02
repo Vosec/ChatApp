@@ -20,3 +20,18 @@
 .App-link {
   color: #09d3ac;
 }
+
+footer {
+    background-color: grey;
+    position: fixed;
+
+    bottom: 0;
+    height: 36px;
+    width: 100%;
+    z-index:1
+}
+
+.textFont{
+    color: #0d71bb;
+}
+

@@ -5,6 +5,7 @@ import Landing from './Components/Landing'
 import Login from './Components/Login'
 import Register from './Components/Register'
 import Profile from './Components/Profile'
+import Chat from './Components/Chat'
 
 class App extends Component {
     render() {
@@ -18,6 +19,8 @@ class App extends Component {
                         <Route exact path="/register" component={Register}/>
                         <Route exact path="/login" component={Login}/>
                         <Route exact path="/profile" component={Profile}/>
+                        <Route exact path="/chat" component={Chat}/>
+
                     </div>
 
                 </div>

@@ -7,7 +7,6 @@ export const register = newUser => {
             password: newUser.password
         })
         .then(response => {
-            console.log(response);
             return response
         })
         .catch(err => {
@@ -23,13 +22,26 @@ export const login = user => {
             password: user.password
         })
         .then(response => {
-            console.log(response);
-            localStorage.setItem('usertoken', response.data);
+            localStorage.setItem('usertoken', response.data.token);
             return response
         })
         .catch(err => {
-            console.log(err.response);
             return err.response;
 
         })
 };
+
+export const history = room => {
+    return axios
+        .post('/history', {
+        room: room
+        })
+        .then(response => {
+            return response.data
+        })
+        .catch(err => {
+            return err.response;
+
+        })
+};
+

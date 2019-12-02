@@ -32,25 +32,31 @@ class Login extends Component {
         login(user).then(res => {
             if (res.status === 200) {
                 this.setState({errors: {}, loginState: true});
-                this.props.history.push(`/profile`);
+                this.props.history.push(`/chat`);
             } else {
+                console.log("nastal error");
                 this.setState({errors: res.data.error, loginState: false});
             }
         })
     };
 
+    showError() {
+        return (
+            this.state.loginState === false &&
+            <div className="ui negative message">
+                <i className="close icon"></i>
+                <div className="header">
+                    {this.state.errors}
+                </div>
+            </div>
+        )
+    }
+
     render() {
         return (
             <div class="ui center aligned page grid">
                 <div className="column twelve wide">
-                    {this.state.loginState === false &&
-                    <div className="ui negative message">
-                        <i className="close icon"></i>
-                        <div className="header">
-                            {this.state.errors}
-                        </div>
-                    </div>
-                    }
+                    {this.showError()}
                     <form noValidate onSubmit={this.onSubmit}>
                         <div>
                             <h2 className="ui icon center aligned header">
