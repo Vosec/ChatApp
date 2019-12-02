@@ -1,7 +1,7 @@
 **Chat web application**
 
 API definition:
-- apiary link
+- https://chatapp20.docs.apiary.io/#
 
 Backend:
 - Python Flask
