@@ -7,10 +7,9 @@ import {Button, Input} from "semantic-ui-react";
 import {history} from "./UserFunctions";
 import '../App.css'
 
-const socket = io('http://127.0.0.1:5000');
+const socket = io('wss://mychatapplv.herokuapp.com');
 
 class Chat extends Component {
-    //TODO: Make message Component - it may solve bubble color problem - sending it through props
     constructor() {
         super();
         this.state = {
@@ -28,16 +27,14 @@ class Chat extends Component {
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.getMessages = this.getMessages.bind(this);
-        //this.saveUser = this.saveUser.bind(this);
         this.createRoom = this.createRoom.bind(this);
         this.changeRoom = this.changeRoom.bind(this);
         this.receiveRooms = this.receiveRooms.bind(this);
         this.receiveNewestRoom = this.receiveNewestRoom.bind(this);
 
-        console.log("construktor");
+
         //get history
         const decoded = jwt_decode(localStorage.usertoken);
-        //FIXME: not working
         this.state.username = decoded.identity.username;
         if (this.state.room === "" || this.state.room === undefined) {
             this.state.room = "default";
@@ -69,20 +66,6 @@ class Chat extends Component {
         });
     };
 
-    /*
-    //FIXME: not working
-    saveUser(us) {
-        this.setState({
-            username: us,
-        });
-        this.setState(prevState => ({
-            users: [...prevState.users, this.state.username]
-        }));
-
-        console.log(this.state.user);
-        console.log(this.state.users);
-    }
-    */
     onChange(e) {
         this.setState({[e.target.name]: e.target.value});
     }
@@ -94,20 +77,15 @@ class Chat extends Component {
     }
 
     componentDidMount() {
-        //TODO: save new logged user?
         console.log("componentDidMount");
         const token = localStorage.usertoken;
-        console.log(token);
-        // or get token from server for this user and compare it with token saved in local storage
         if (token === undefined) {
             return <Redirect to="/" component={Landing}/>;
         }
 
-        const decoded = jwt_decode(token);
-        //FIXME: not working
-        //this.saveUser(decoded.identity.username);
         this.receiveMessage();
         this.receiveRooms();
+        this.receiveNewestRoom();
     };
 
     receiveRooms() {
@@ -121,7 +99,6 @@ class Chat extends Component {
     }
 
     receiveNewestRoom() {
-        //FIXME: not working socket.emit
         socket.emit("getNewestRoom");
         socket.on('getNewestRoom', (data) => {
             if (!(this.state.rooms.includes(data))) {
