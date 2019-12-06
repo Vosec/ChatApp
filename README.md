@@ -9,3 +9,5 @@ Backend:
 
 Frontend:
 - React.js
+
+Note: this is production build on heroku, credentials for DB connection are not pushed.
