@@ -21,7 +21,8 @@ def check(username):
     :param username: name of user
     :return: returns username, hashed pw, and date of creation
     """
-    cur.execute("SELECT * FROM users where username = '{0}'".format(username))
+    sql = 'SELECT * FROM users where username = %s'
+    cur.execute(sql, (str(username),))
     rv = cur.fetchone()
     return rv
 
@@ -32,7 +33,8 @@ def check_room(room):
     :param room: name of room
     :return: room
     """
-    cur.execute("""SELECT * FROM rooms where name = %s""", (str(room),))
+    sql = 'SELECT * FROM rooms where name = %s'
+    cur.execute(sql, (str(room),))
     rv = cur.fetchone()
     return rv
 
@@ -45,7 +47,8 @@ def register(username, password):
     :return: None
     """
     created = datetime.utcnow()
-    cur.execute("""INSERT INTO users (username, userPw, created) VALUES (%s, %s, %s)""", (str(username), str(password),
+    sql = 'INSERT INTO users (username, userPw, created) VALUES (%s, %s, %s)'
+    cur.execute(sql, (str(username), str(password),
                 str(created)))
     connection.commit()
 
@@ -57,9 +60,9 @@ def save_message(data):
     :return: None
     """
     created = datetime.now()
-    cur.execute("""INSERT INTO messages (username, message, created, room) VALUES (%s, %s, %s, %s)""",
-                 (str(data['username']), str(data['message']),
-                  str(created), str(data['room'])))
+    sql = 'INSERT INTO messages (username, message, created, room) VALUES (%s, %s, %s, %s)'
+    cur.execute(sql, (str(data['username']), str(data['message']),
+                str(created), str(data['room'])))
     connection.commit()
 
 
@@ -70,7 +73,8 @@ def get_messages(room):
     :return: messages for the room as list
     """
     res = []
-    cur.execute("""SELECT * FROM messages WHERE room = %s""", (str(room),))
+    sql = 'SELECT * FROM messages WHERE room = %s'
+    cur.execute(sql, (str(room),))
     rv = cur.fetchall()
 
     for msg in rv:
@@ -86,9 +90,9 @@ def create_room(room):
     :return: messages for the room as list
     """
     tmp = check_room(room['room'])
-    print(tmp)
     if tmp is None:
-        cur.execute("""INSERT INTO rooms (name) VALUES (%s)""", (str(room['room']),))
+        sql = 'INSERT INTO rooms (name) VALUES (%s)'
+        cur.execute(sql, (str(room['room']),))
         connection.commit()
 
 
@@ -99,7 +103,7 @@ def get_rooms():
     """
     res = []
     time.sleep(0.5)
-    cur.execute("""SELECT * FROM rooms""")
+    cur.execute('SELECT * FROM rooms')
     rv = cur.fetchall()
 
     for room in rv:
@@ -112,6 +116,6 @@ def get_newest_room():
     Gets newest room
     :return: newest room
     """
-    cur.execute("""SELECT * FROM rooms ORDER BY id DESC LIMIT 1""")
+    cur.execute('SELECT * FROM rooms ORDER BY id DESC LIMIT 1')
     rv = cur.fetchone()
     return rv[0]
