@@ -74,8 +74,6 @@ def message(msg):
     websocket for broadcasting messages to connected rooms
     """
     User.save_message(msg)
-    if len(msg) > 20 or len(msg) <= 0:
-        return jsonify({"error": "Maximum length of message is 20 chars, minimum 1"}), 400
     send(msg['username']+": "+msg['message'], broadcast=True, room=msg['room'])
 
 
