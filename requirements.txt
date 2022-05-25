@@ -17,7 +17,7 @@ monotonic==1.5
 netifaces==0.10.6
 psycopg2==2.8.4
 pycparser==2.19
-PyJWT==1.7.1
+PyJWT==2.4.0
 PyMySQL==0.9.3
 python-dotenv==0.10.3
 python-engineio==3.10.0
